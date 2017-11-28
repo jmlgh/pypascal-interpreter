@@ -62,7 +62,6 @@ class Interpreter(object):
         l_oper = str(self.current_token.value)
         self.consume_token(INTEGER)
         op = None
-
         for _ in range(len(self.text) - 1):
             elem = self.current_token
             if elem.type == INTEGER and op is None:
