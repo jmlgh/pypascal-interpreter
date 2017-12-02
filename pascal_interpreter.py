@@ -22,6 +22,7 @@ class Interpreter(object):
         self.text = text
         self.pos = 0
         self.current_token = None
+        #self.current_char = self.text[self.pos]
 
 
     def error(self):
@@ -29,21 +30,25 @@ class Interpreter(object):
 
 
     def get_next_token(self):
-        text = self.text
+        #text = self.text
         # check for eof or eol
-        if self.pos > len(text) - 1:
+        if self.pos > len(self.text) - 1:
             return Token(EOF, None)
-        current_char = text[self.pos]
-        if current_char.isdigit():
+        #current_char = text[self.pos]
+        self.current_char = self.text[self.pos]
+        if self.current_char.isdigit():
             try:
-                token = Token(INTEGER, int(current_char))
+                token = Token(INTEGER, int(self.current_char))
                 self.pos += 1
                 return token
             except Exception:
                 self.error()
-        elif current_char == '+':
+        elif self.current_char == "+":
             self.pos += 1
-            return Token(PLUS, current_char)
+            return Token(PLUS, self.current_char)
+        elif self.current_char == "-":
+            self.pos += 1
+            return Token(MINUS, self.current_char)
         # if we get here the character wasn't recognized
         self.error()
 
@@ -72,8 +77,16 @@ class Interpreter(object):
                 self.consume_token(INTEGER)
             else:
                 op = self.current_token
-                self.consume_token(PLUS)
-        return int(l_oper) + int(r_oper)
+                if op.type == MINUS:
+                    self.consume_token(MINUS)
+                else:
+                    self.consume_token(PLUS)
+        # if both operands exist
+        if l_oper and r_oper:
+            if op.type == MINUS:
+                return int(l_oper) - int(r_oper)
+            else:
+                return int(l_oper) + int(r_oper)
 
 
 def main():
